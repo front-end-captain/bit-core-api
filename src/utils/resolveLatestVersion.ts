@@ -7,8 +7,7 @@ import { compact } from "lodash";
 import * as R from "ramda";
 import semver from "semver";
 
-import type { BitId } from "@teambit/legacy-bit-id";
-import type { BitIds } from "../bit-id";
+import type { BitId, BitIds } from "../bit-id";
 
 export function getLatestVersionNumber(bitIds: BitIds, bitId: BitId): BitId {
   if (!bitId.getVersion().latest) return bitId;

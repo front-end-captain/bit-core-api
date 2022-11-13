@@ -1,6 +1,6 @@
 import * as R from "ramda";
 
-import { BitIdStr, BitId } from "@teambit/legacy-bit-id";
+import { BitIdStr, BitId } from "./bit-id";
 import { LATEST_BIT_VERSION } from "../constants";
 import { forEach } from "../utils";
 import { getLatestVersionNumber } from "../utils";
