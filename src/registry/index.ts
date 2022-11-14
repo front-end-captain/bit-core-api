@@ -1,0 +1,1 @@
+export { npmLogin } from "./registry";

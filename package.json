@@ -21,6 +21,7 @@
   "dependencies": {
     "@teambit/legacy-bit-id": "0.0.419",
     "@teambit/component-version": "0.0.407",
+    "ini": "3.0.1",
     "chai": "4.3.0",
     "chalk": "2.4.2",
     "checksum": "0.1.1",
@@ -70,6 +71,7 @@
     "@types/lodash": "4.14.178",
     "@types/prompt": "1.1.4",
     "@types/node-fetch": "2.5.12",
+    "@types/ini": "1.3.31",
     "@types/node": "*",
     "@types/normalize-path": "3.0.0",
     "@types/ramda": "0.27.1",
