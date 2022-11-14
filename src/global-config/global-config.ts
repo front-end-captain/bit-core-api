@@ -18,7 +18,7 @@ export function set(key: string, val: string): Promise<Config> {
   });
 }
 
-export function setSync(key: string, val: string): Config {
+export function setSync(key: string, val: string | boolean): Config {
   const config = Config.loadSync();
   config.set(key, val);
   invalidateCache();
@@ -42,7 +42,7 @@ export function delSync(key: string): Config {
   return config;
 }
 
-export async function get(key: string): Promise<string | undefined> {
+export async function get(key: string): Promise<string | boolean | undefined> {
   const getConfigObject = async () => {
     const configFromCache = cache().get();
     if (configFromCache) return configFromCache;
@@ -65,7 +65,7 @@ export async function get(key: string): Promise<string | undefined> {
   }
 }
 
-export function getSync(key: string): string | undefined {
+export function getSync(key: string): string | boolean | undefined {
   const getConfigObject = () => {
     const configFromCache = cache().get();
     if (configFromCache) return configFromCache;
