@@ -1,6 +1,6 @@
 import { expect, describe, it, beforeAll } from "vitest";
 
-import { BitId } from "@teambit/legacy-bit-id";
+import { BitId } from "./bit-id";
 import { BitIds } from "./bit-ids";
 
 describe("bitIds", () => {

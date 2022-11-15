@@ -1,5 +1,5 @@
 import { ReleaseType, valid, maxSatisfying } from "semver";
-import { InvalidVersion } from "@teambit/component-version";
+import { InvalidVersion } from "../component";
 
 export function isStrReleaseType(str: string): boolean {
   const releaseTypes = [
