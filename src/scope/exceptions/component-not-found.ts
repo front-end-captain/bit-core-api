@@ -1,0 +1,20 @@
+import { BitError } from "../../error";
+import chalk from "chalk";
+
+export class ComponentNotFound extends BitError {
+  id: string;
+  dependentId: string | null | undefined;
+  code: number;
+
+  constructor(id: string, dependentId?: string) {
+    const baseMsg = dependentId
+      ? `error: the component dependency "${chalk.bold(id)}" required by "${chalk.bold(
+          dependentId,
+        )}" was not found`
+      : `error: component "${chalk.bold(id)}" was not found`;
+    super(baseMsg);
+    this.code = 127;
+    this.id = id;
+    this.dependentId = dependentId;
+  }
+}
