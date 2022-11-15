@@ -5,6 +5,7 @@ declare module "gitconfig" {
   }
   interface M {
     get: Get;
+    fetchRepo: () => Array<string> | string;
   }
   const m: M = {};
   export default m;
