@@ -20,7 +20,12 @@ export async function parse(data: string, filePath: PathOsBased): Promise<Doclet
     const jsdocRegex = /[ \t]*\/\*\*\s*\n([^*]|(\*(?!\/)))*\*\//g;
     const docs = data.match(jsdocRegex);
     // populate doclets array
-    docs?.forEach((doc) => extractDataRegex(doc, doclets, filePath));
+    docs?.forEach((doc) => {
+      const doclet = extractDataRegex(doc, filePath);
+      if (doclet) {
+        doclets.push(doclet);
+      }
+    });
   } catch (e: any) {
     // never mind, ignore the doc of this source
     logger.trace(`failed parsing docs using on path ${filePath} with error`, e);

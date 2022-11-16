@@ -3,6 +3,7 @@ import fs from "fs-extra";
 import * as path from "path";
 
 import { parse } from "./react-parser";
+import type { Doclet } from "../types";
 
 const fixtures = path.join(__dirname, "../../..", "fixtures", "jsdoc");
 
@@ -20,7 +21,7 @@ describe("React docs Parser", () => {
     });
 
     describe("React Docs", () => {
-      let doclet;
+      let doclet: Doclet;
       beforeAll(async () => {
         const file = path.join(fixtures, "react/react-docs.js");
         const doclets = await parseFile(file);
@@ -53,7 +54,7 @@ describe("React docs Parser", () => {
       });
     });
     describe("elevation", () => {
-      let doclet;
+      let doclet: Doclet;
       beforeAll(async () => {
         const file = path.join(fixtures, "react/elevation.tsx");
         const doclets = await parseFile(file);

@@ -1,16 +1,12 @@
 import fs from "fs-extra";
 import Vinyl from "vinyl";
 import { ComponentFsCache } from "../consumer/component/component-fs-cache";
-// import { SourceFile } from '../consumer/component/sources';
 import { PathOsBased } from "../utils/path";
 import { parse as jsDocParse } from "./jsdoc";
 import { parse as reactParse } from "./react";
 import { Doclet } from "./types";
 
-export default async function parse(
-  file: Vinyl,
-  componentFsCache: ComponentFsCache,
-): Promise<Doclet[]> {
+export async function parse(file: Vinyl, componentFsCache: ComponentFsCache): Promise<Doclet[]> {
   const docsFromCache = await componentFsCache.getDocsFromCache(file.path);
   if (docsFromCache && docsFromCache.timestamp) {
     const stat = await fs.stat(file.path);
@@ -20,9 +16,12 @@ export default async function parse(
     }
   }
 
-  const results = await parseFile(file.contents.toString(), file.relative);
-  await componentFsCache.saveDocsInCache(file.path, results);
-  return results;
+  if (file.contents) {
+    const results = await parseFile(file.contents.toString(), file.relative);
+    await componentFsCache.saveDocsInCache(file.path, results);
+    return results;
+  }
+  return [];
 }
 
 async function parseFile(data: string, filePath: PathOsBased): Promise<Doclet[]> {

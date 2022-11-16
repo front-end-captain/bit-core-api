@@ -1,11 +1,5 @@
+import type { Example } from "./types";
 import { GeneralError } from "../error";
-
-export type Example = {
-  raw: string;
-  description?: string;
-  code?: string;
-  returns?: string;
-};
 
 const token = {
   CODE: "CODE",
@@ -13,7 +7,6 @@ const token = {
   RETURNS_DELIMITER: "RETURNS_DELIMITER",
   COMMENT: "COMMENT",
 };
-
 // @ts-ignore AUTO-ADDED-AFTER-MIGRATION-PLEASE-FIX!
 type Token = $Keys<typeof token>;
 

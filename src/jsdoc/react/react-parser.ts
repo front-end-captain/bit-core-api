@@ -7,6 +7,7 @@ import type {
   PropTypeDescriptor,
   TypeDescriptor,
   TSFunctionSignatureType,
+  ElementsType,
 } from "react-docgen/dist/Documentation";
 
 import { logger } from "../../logger";
@@ -15,7 +16,77 @@ import { PathOsBased } from "../../utils/path";
 import { extractDataRegex } from "../extract-data-regex";
 import { Doclet, PropDefaultValue } from "../types";
 
-type ComponentInfo = { description: string; displayName: string } & DocumentationObject;
+export type ComponentDoc = {
+  description: string;
+  displayName: string;
+} & DocumentationObject;
+
+type EnumValueItem = { value: string; computed: false };
+type UnionValueItem = { name: string };
+type ArrayOfValue = { name: string };
+type ShapeValue = Record<string, { name: string; required: boolean }>;
+type InstanceOfValue = string;
+
+function stringifyType(
+  propType?: PropTypeDescriptor | TypeDescriptor<TSFunctionSignatureType>,
+): string {
+  if (!propType) return "?";
+
+  const { name } = propType;
+  // console.log("stringifyType", name);
+  let transformed;
+
+  switch (name) {
+    default:
+      transformed = name;
+      break;
+    case "func":
+      transformed = "function";
+      break;
+    case "shape":
+      const _value = (propType as PropTypeDescriptor).value as ShapeValue;
+      transformed = JSON.stringify(
+        Object.keys(_value).reduce((acc, current) => {
+          acc[current] = stringifyType(_value[current]);
+          return acc;
+        }, {} as Record<string, string>),
+      );
+      break;
+    case "enum":
+      transformed = ((propType as PropTypeDescriptor).value as Array<EnumValueItem>)
+        .map((enumProp) => enumProp.value)
+        .join(" | ");
+      break;
+    case "instanceOf":
+      transformed = (propType as PropTypeDescriptor).value as InstanceOfValue;
+      break;
+    case "union":
+      transformed = (propType as PropTypeDescriptor).value
+        ? ((propType as PropTypeDescriptor).value as Array<UnionValueItem>)
+            .map((p) => stringifyType(p))
+            .join(" | ")
+        : (propType as ElementsType).raw;
+      break;
+    case "arrayOf":
+      transformed = `${stringifyType((propType as PropTypeDescriptor).value as ArrayOfValue)}[]`;
+      break;
+  }
+
+  return transformed;
+}
+
+function formatMethods(methods: MethodDescriptor[]) {
+  return methods.map((method) => {
+    const { returns, modifiers, params, docblock, name } = method;
+    return {
+      name,
+      description: docblock,
+      returns,
+      modifiers,
+      params,
+    };
+  });
+}
 
 function formatProperties(props: Record<string, PropDescriptor>) {
   const parseDescription = (description: string) => {
@@ -34,112 +105,58 @@ function formatProperties(props: Record<string, PropDescriptor>) {
     }
     return description;
   };
-
   return Object.keys(props).map((name) => {
     const { type, description, required, defaultValue, tsType } = props[name];
 
     return {
       name,
-      description: parseDescription(description || ""),
+      description: description ? parseDescription(description) : "",
       required,
-      type: stringifyType(type || tsType!),
+      type: stringifyType(type || tsType),
       defaultValue: defaultValue as PropDefaultValue,
     };
   });
 }
 
-function formatMethods(methods: MethodDescriptor[]) {
-  return methods.map((method) => {
-    const { returns, modifiers, params, docblock, name } = method;
-    return {
-      name,
-      description: docblock,
-      returns,
-      modifiers,
-      params,
-    };
-  });
-}
-
-function fromReactDocs(componentInfo: ComponentInfo, filePath: string): Doclet {
+export function formatComponentDoc(componentDoc: ComponentDoc, filePath: string): Doclet {
   return {
     filePath: pathNormalizeToLinux(filePath),
-    name: componentInfo.displayName,
-    description: componentInfo.description,
-    properties: formatProperties(componentInfo.props || {}),
+    name: componentDoc.displayName,
+    description: componentDoc.description,
+    properties: formatProperties(componentDoc.props || {}),
     access: "public",
-    methods: formatMethods(componentInfo.methods || []),
+    methods: formatMethods(componentDoc.methods || []),
+    examples: [],
   };
 }
 
-function stringifyType(
-  propType: PropTypeDescriptor | TypeDescriptor<TSFunctionSignatureType>,
-): string {
-  if (!propType) return "?"; // TODO!
-
-  const { name } = propType;
-  let transformed;
-
-  switch (name) {
-    default:
-      transformed = name;
-      break;
-    case "func":
-      transformed = "function";
-      break;
-    case "shape":
-      transformed = JSON.stringify(
-        Object.keys(propType.value).reduce((acc = {}, current) => {
-          acc[current] = stringifyType(propType.value[current]);
-          return acc;
-        }, {}),
-      );
-      break;
-    case "enum":
-      transformed = propType.value.map((enumProp) => enumProp.value).join(" | ");
-      break;
-    case "instanceOf":
-      transformed = propType.value;
-      break;
-    case "union":
-      transformed = propType.value
-        ? propType.value.map((p) => stringifyType(p)).join(" | ")
-        : propType.raw;
-      break;
-    case "arrayOf":
-      transformed = `${stringifyType(propType.value)}[]`;
-      break;
-  }
-
-  return transformed;
-}
-
 export async function parse(data: string, filePath: PathOsBased): Promise<Doclet[] | undefined> {
-  const doclets: Array<Doclet> = [];
   try {
-    const componentsInfo: ComponentInfo | ComponentInfo[] = ReactDocs.parse(
+    const componentsDoc: ComponentDoc[] | ComponentDoc = ReactDocs.parse(
       data,
       ReactDocs.resolver.findAllExportedComponentDefinitions,
       undefined,
       {
         configFile: false,
-        filename: filePath, // should we use pathNormalizeToLinux(filePath) ?
+        filename: filePath,
       },
-    ) as ComponentInfo | ComponentInfo[];
+    ) as ComponentDoc[] | ComponentDoc;
 
-    if (Array.isArray(componentsInfo)) {
-      return componentsInfo.map((componentInfo) => {
-        const formatted = fromReactDocs(componentInfo, filePath);
-        formatted.args = [];
-        // this is a workaround to get the 'example' tag parsed when using react-docs
-        // because as of now Docgen doesn't parse @example tag, instead, it shows it inside
-        // the @description tag.
-        extractDataRegex(formatted.description, doclets, filePath, false);
-        formatted.description = doclets[0].description;
-        formatted.examples = doclets[0].examples;
-        return formatted;
+    if (Array.isArray(componentsDoc) && componentsDoc.length) {
+      return componentsDoc.map((componentDoc) => {
+        const doc = formatComponentDoc(componentDoc, filePath);
+        doc.args = [];
+
+        const descDoc = extractDataRegex(doc.description, filePath, false);
+        if (descDoc) {
+          doc.description = descDoc.description;
+          doc.examples = descDoc.examples;
+        }
+
+        return doc;
       });
     }
+    return [];
   } catch (err) {
     logger.trace(`failed parsing docs using docgen on path ${filePath} with error`, err);
   }

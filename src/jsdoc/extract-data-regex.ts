@@ -2,8 +2,8 @@ import doctrine from "doctrine";
 
 import { pathNormalizeToLinux } from "../utils";
 import { PathOsBased } from "../utils/path";
-import { Example, parse as exampleTagParser } from "./example-tag-parser";
-import { Doclet, DocProp } from "./types";
+import { parse as exampleTagParser } from "./example-tag-parser";
+import { Doclet, DocProp, Example } from "./types";
 
 export interface OriginTag {
   /** The title of the jsdoc tag. e.g. `@foo` will have a title of 'foo'. */
@@ -59,12 +59,7 @@ function formatTag(tag: doctrine.Tag): FormattedTag {
   return tag as FormattedTag;
 }
 
-export function extractDataRegex(
-  doc: string,
-  doclets: Array<Doclet>,
-  filePath?: PathOsBased,
-  unwrap = true,
-) {
+export function extractDataRegex(doc: string, filePath?: PathOsBased, unwrap = true) {
   const commentsAst = doctrine.parse(doc.trim(), { unwrap, recoverable: true, sloppy: true });
   if (!commentsAst) return;
 
@@ -133,5 +128,5 @@ export function extractDataRegex(
     filePath: pathNormalizeToLinux(filePath || ""),
   };
 
-  doclets.push(doclet);
+  return doclet;
 }

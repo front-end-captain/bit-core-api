@@ -4,6 +4,7 @@ import fs from "fs-extra";
 import { isFeatureEnabled, NO_FS_CACHE_FEATURE } from "../../api/consumer/lib/feature-toggle";
 import { PathOsBasedAbsolute } from "../../utils/path";
 import type { ComponentMapFile } from "../bit-map";
+import type { Doclet } from "../../jsdoc";
 
 const WORKSPACE_CACHE = "cache";
 const COMPONENTS_CACHE = "components";
@@ -50,7 +51,7 @@ export class ComponentFsCache {
     return this.getStringDataFromCache(filePath, DOCS);
   }
 
-  async saveDocsInCache(filePath: string, docs: Record<string, unknown>) {
+  async saveDocsInCache(filePath: string, docs: Doclet[]) {
     await this.saveStringDataInCache(filePath, DOCS, docs);
   }
 
@@ -87,7 +88,7 @@ export class ComponentFsCache {
   private async saveStringDataInCache(
     key: string,
     cacheName: string,
-    data: Record<string, unknown> | ComponentMapFile[],
+    data: Doclet[] | ComponentMapFile[],
   ) {
     const dataBuffer = Buffer.from(JSON.stringify(data));
     const metadata = { timestamp: Date.now() };
