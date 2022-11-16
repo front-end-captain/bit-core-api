@@ -2,7 +2,7 @@ import { MissingAbortFn } from "./exceptions";
 
 export class AbortablePromise<T> extends Promise<T> {
   constructor(
-    promiseFn: (resolve: (data: any) => void, reject: (err: Error) => void) => void,
+    promiseFn: (resolve: (data: T) => void, reject: (err: Error) => void) => void,
     private abortFn?: () => void,
   ) {
     super(promiseFn);

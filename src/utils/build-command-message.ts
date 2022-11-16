@@ -1,11 +1,11 @@
 // import { BIT_VERSION } from "../constants";
-import { PackData } from "./pack-command";
+import type { PackData } from "./pack-command";
 
 export function buildCommandMessage(
   payload: Record<string, string>,
   context: Record<string, string>,
   compress = true,
-  extraHeaders = {},
+  extraHeaders: Record<string, string> = {},
 ): PackData {
   return {
     payload,

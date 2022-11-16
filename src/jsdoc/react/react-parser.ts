@@ -7,6 +7,7 @@ import type {
   PropTypeDescriptor,
   TypeDescriptor,
   TSFunctionSignatureType,
+  FunctionSignatureType,
   ElementsType,
 } from "react-docgen/dist/Documentation";
 
@@ -28,7 +29,7 @@ type ShapeValue = Record<string, { name: string; required: boolean }>;
 type InstanceOfValue = string;
 
 function stringifyType(
-  propType?: PropTypeDescriptor | TypeDescriptor<TSFunctionSignatureType>,
+  propType?: PropTypeDescriptor | TypeDescriptor<TSFunctionSignatureType | FunctionSignatureType>,
 ): string {
   if (!propType) return "?";
 
@@ -106,13 +107,13 @@ function formatProperties(props: Record<string, PropDescriptor>) {
     return description;
   };
   return Object.keys(props).map((name) => {
-    const { type, description, required, defaultValue, tsType } = props[name];
+    const { type, description, required, defaultValue, tsType, flowType } = props[name];
 
     return {
       name,
       description: description ? parseDescription(description) : "",
       required,
-      type: stringifyType(type || tsType),
+      type: stringifyType(type || flowType || tsType),
       defaultValue: defaultValue as PropDefaultValue,
     };
   });

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { expect, describe, beforeAll, it } from "vitest";
 import fs from "fs-extra";
 import * as path from "path";
@@ -137,8 +138,6 @@ describe("JSDoc Parser", () => {
         expect(doclet).to.have.property("description").that.equals("Get the y value.");
       });
       it("should recognize the fromString method as the last doclet", function () {
-        // @ts-ignore
-        this.timeout(0);
         const doclet = doclets[doclets.length - 1];
         expect(doclet).to.have.property("name").that.equals("fromString");
         expect(doclet)

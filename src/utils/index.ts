@@ -69,6 +69,7 @@ import { toBoolean } from "./to-boolean";
 import { unpackCommand } from "./unpack-command";
 import { deflate } from "./zlib-deflate";
 import { inflate } from "./zlib-inflate";
+export { removeFile } from "./fs-remove-file";
 
 export type {
   PathOsBased,

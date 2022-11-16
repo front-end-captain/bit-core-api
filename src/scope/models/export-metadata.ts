@@ -7,6 +7,7 @@ type ExportMetadataProps = {
 };
 
 export type ExportVersions = { id: BitId; versions: string[]; head: Ref };
+export type ExportVersionObject = { id: string; versions: string[]; head: string };
 
 export class ExportMetadata extends BitObject {
   exportVersions: ExportVersions[];
@@ -15,7 +16,7 @@ export class ExportMetadata extends BitObject {
     this.exportVersions = props.exportVersions;
   }
 
-  toObject(): Record<string, any> {
+  toObject(): { exportVersions: ExportVersionObject[] } {
     return {
       exportVersions: this.exportVersions.map((exportComp) => ({
         id: exportComp.id.toStringWithoutVersion(),
@@ -39,7 +40,7 @@ export class ExportMetadata extends BitObject {
   }
 
   static parse(contents: string): ExportMetadata {
-    const parsed = JSON.parse(contents);
+    const parsed: { exportVersions: ExportVersionObject[] } = JSON.parse(contents);
     const props: ExportMetadataProps = {
       exportVersions: parsed.exportVersions.map((comp) => ({
         id: BitId.parse(comp.id, true),

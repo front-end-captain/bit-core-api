@@ -1,6 +1,6 @@
 import execa from "execa";
 
-// import logger from "../logger/logger";
+import { logger } from "../logger";
 import { PathOsBased } from "../utils/path";
 import { GitNotFound } from "./git/exceptions/git-not-found";
 import { getGitExecutablePath } from "./git/git-executable";
@@ -22,13 +22,20 @@ export default async function diffFiles(
   try {
     const result = await execa(gitExecutablePath, params);
     return result.stdout;
-  } catch (err: any) {
+  } catch (_err: unknown) {
+    const err = _err as Error & {
+      exitCode: string | number;
+      stdout: string;
+      exitCodeName: string;
+      cmd: string;
+    };
+
     if (err.exitCode && Number.isInteger(err.exitCode) && err.stdout) {
       // diff has been found, return the diff results.
       return err.stdout;
     }
     if (err.exitCodeName === "ENOENT") {
-      // logger.error(`failed running Git at ${gitExecutablePath}. full command: ${err.cmd}`);
+      logger.error(`failed running Git at ${gitExecutablePath}. full command: ${err.cmd}`);
       throw new GitNotFound(gitExecutablePath, err);
     }
     throw err;

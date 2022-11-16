@@ -1,4 +1,3 @@
-/* eslint-disable promise/no-nesting */
 import { fork } from "child_process";
 import hashObj from "object-hash";
 import os from "os";
@@ -25,13 +24,13 @@ type CLIArgs = Array<string[] | string>;
 
 type Item = undefined | number | boolean | string | null | string[];
 
-const LEVEL = {
-  DEBUG: "debug",
-  INFO: "info",
-  WARNING: "warning",
-  ERROR: "error",
-  FATAL: "fatal",
-};
+export enum LEVEL {
+  DEBUG = "debug",
+  INFO = "info",
+  WARNING = "warning",
+  ERROR = "error",
+  FATAL = "fatal",
+}
 
 class Breadcrumb {
   category: string;
@@ -44,7 +43,7 @@ class Breadcrumb {
     this.data = data || {};
   }
 }
-class Analytics {
+export class Analytics {
   static username: string;
   static command: string;
   static release: string;
@@ -54,8 +53,8 @@ class Analytics {
   static nodeVersion: string;
   static os: string;
   static extra: Record<string, number> = {};
-  static level: keyof typeof LEVEL;
-  static error: Error | string | Record<string, any>;
+  static level: LEVEL;
+  static error: Error | string | Record<string, unknown>;
   static breadcrumbs: Array<Breadcrumb> = [];
   static analytics_usage: boolean;
   static error_usage: boolean;
@@ -147,7 +146,7 @@ class Analytics {
     this.args = this._hashArgs(args);
     this.nodeVersion = process.version;
     this.os = process.platform;
-    (this.level as any) = LEVEL.INFO;
+    this.level = LEVEL.INFO;
     this.username = !this.anonymous
       ? (getSync(CFG_USER_EMAIL_KEY) as string) ||
         (getSync(CFG_USER_NAME_KEY) as string) ||
@@ -203,7 +202,7 @@ class Analytics {
       this.extra[key] = value || 1;
     }
   }
-  static hashData(data: any) {
+  static hashData(data: unknown) {
     if (this.anonymous) {
       return hashObj(data);
     }
@@ -234,5 +233,3 @@ class Analytics {
     };
   }
 }
-
-export { LEVEL, Analytics };

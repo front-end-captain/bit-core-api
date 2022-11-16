@@ -34,7 +34,8 @@ export async function getLastModifiedComponentTimestampMs(
 async function getPathStatIfExist(path: string): Promise<Stats | null> {
   try {
     return await fs.stat(path);
-  } catch (err: any) {
+  } catch (_err: unknown) {
+    const err = _err as Error & { code: string };
     if (err.code === "ENOENT") return null;
     throw err;
   }

@@ -1,15 +1,17 @@
 import PQueue from "p-queue";
 
-export class Queue {
+type Task<TaskResultType> = (() => PromiseLike<TaskResultType>) | (() => TaskResultType);
+
+export class Queue<TaskResultType> {
   private queue: PQueue;
 
   constructor(public concurrency = 5, public autoStart = true) {
     this.queue = new PQueue({ concurrency, autoStart });
   }
-  addAll(fns: Array<() => any>): Promise<any[]> {
+  addAll(fns: Array<() => TaskResultType>): Promise<TaskResultType[]> {
     return this.queue.addAll(fns);
   }
-  add(fn: () => any, priority: number): Promise<any> {
+  add(fn: Task<TaskResultType>, priority: number): Promise<TaskResultType> {
     return this.queue.add(fn, { priority });
   }
   pause(): void {

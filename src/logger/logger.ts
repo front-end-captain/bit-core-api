@@ -31,17 +31,17 @@ const { createExtensionLogger } = getWinstonLogger(logLevel, jsonFormat);
 const { pinoLogger, pinoLoggerConsole } = getPinoLogger(logLevel, jsonFormat);
 
 export interface IBitLogger {
-  trace(message: string, ...meta: any[]): void;
+  trace(message: string, ...meta: unknown[]): void;
 
-  debug(message: string, ...meta: any[]): void;
+  debug(message: string, ...meta: unknown[]): void;
 
-  warn(message: string, ...meta: any[]): void;
+  warn(message: string, ...meta: unknown[]): void;
 
-  info(message: string, ...meta: any[]): void;
+  info(message: string, ...meta: unknown[]): void;
 
-  error(message: string, ...meta: any[]): void;
+  error(message: string, ...meta: unknown[]): void;
 
-  fatal(message: string, ...meta: any[]): void;
+  fatal(message: string, ...meta: unknown[]): void;
 
   console(msg: string): void;
 }
@@ -76,31 +76,31 @@ class BitLogger implements IBitLogger {
   /**
    * @deprecated use trace instead
    */
-  silly(message: string, ...meta: any[]) {
+  silly(message: string, ...meta: unknown[]) {
     this.logger.trace(message, ...meta);
   }
 
-  trace(message: string, ...meta: any[]) {
+  trace(message: string, ...meta: unknown[]) {
     this.logger.trace(message, ...meta);
   }
 
-  debug(message: string, ...meta: any[]) {
+  debug(message: string, ...meta: unknown[]) {
     this.logger.debug(message, ...meta);
   }
 
-  warn(message: string, ...meta: any[]) {
+  warn(message: string, ...meta: unknown[]) {
     this.logger.warn(message, ...meta);
   }
 
-  info(message: string, ...meta: any[]) {
+  info(message: string, ...meta: unknown[]) {
     this.logger.info(message, ...meta);
   }
 
-  error(message: string, ...meta: any[]) {
+  error(message: string, ...meta: unknown[]) {
     this.logger.error(message, ...meta);
   }
 
-  fatal(message: string, ...meta: any[]) {
+  fatal(message: string, ...meta: unknown[]) {
     this.logger.fatal(message, ...meta);
   }
 
@@ -179,8 +179,8 @@ class BitLogger implements IBitLogger {
   debugAndAddBreadCrumb(
     category: string,
     message: string,
-    data?: Record<string, any>,
-    extraData?: Record<string, any>,
+    data?: Record<string, unknown>,
+    extraData?: Record<string, unknown>,
   ) {
     this.addToLoggerAndToBreadCrumb("debug", category, message, data, extraData);
   }
@@ -188,8 +188,8 @@ class BitLogger implements IBitLogger {
   warnAndAddBreadCrumb(
     category: string,
     message: string,
-    data?: Record<string, any>,
-    extraData?: Record<string, any>,
+    data?: Record<string, unknown>,
+    extraData?: Record<string, unknown>,
   ) {
     this.addToLoggerAndToBreadCrumb("warn", category, message, data, extraData);
   }
@@ -197,8 +197,8 @@ class BitLogger implements IBitLogger {
   errorAndAddBreadCrumb(
     category: string,
     message: string,
-    data?: Record<string, any>,
-    extraData?: Record<string, any>,
+    data?: Record<string, unknown>,
+    extraData?: Record<string, unknown>,
   ) {
     this.addToLoggerAndToBreadCrumb("error", category, message, data, extraData);
   }
@@ -207,8 +207,8 @@ class BitLogger implements IBitLogger {
     level: string,
     category: string,
     message: string,
-    data?: Record<string, any>,
-    extraData?: Record<string, any> | null | undefined,
+    data?: Record<string, unknown>,
+    extraData?: Record<string, unknown> | null | undefined,
   ) {
     if (!category) throw new TypeError("addToLoggerAndToBreadCrumb, category is missing");
     if (!message) throw new TypeError("addToLoggerAndToBreadCrumb, message is missing");

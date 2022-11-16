@@ -9,6 +9,6 @@
  *  isString(4) // => false
  * ```
  */
-export function isString(val: any): val is string {
+export function isString(val: unknown): val is string {
   return typeof val === "string";
 }

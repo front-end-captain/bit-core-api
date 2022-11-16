@@ -65,8 +65,9 @@ function getMetadata(info: winston.Logform.TransformableInfo) {
   }
   try {
     return JSON.stringify(info.metadata, null, 2);
-  } catch (err: any) {
-    return `logger error: logging failed to stringify the metadata Json. (error: ${err.message})`;
+  } catch (err: unknown) {
+    return `logger error: logging failed to stringify the metadata Json.
+(error: ${(err as Error).message})`;
   }
 }
 

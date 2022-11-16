@@ -48,11 +48,12 @@ export function getPinoLogger(
    * this hook flips the first two arguments, so then it's fine to have the message as the first arg.
    */
   const hooks = {
-    logMethod(inputArgs: any[], method: LogFn) {
+    logMethod(inputArgs: string[], method: LogFn) {
       if (inputArgs.length >= 2 && inputArgs[1] !== undefined) {
         const arg1 = inputArgs.shift();
         const arg2 = inputArgs.shift();
-        return method.apply(this, [arg2, arg1]);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return method.apply(this, [arg2!, arg1!]);
       }
       // @ts-ignore
       return method.apply(this, inputArgs);

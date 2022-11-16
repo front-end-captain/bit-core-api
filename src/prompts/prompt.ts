@@ -6,9 +6,7 @@ import { PromptCanceled } from "./exceptions";
 const DEFAULT_PROMPT_MSG = "";
 const CANCEL_ERROR_MSG = "canceled";
 
-export function _prompt<T extends prompt.Properties>(
-  schema: Record<string, any>,
-): () => Promise<T> {
+export function _prompt<T extends prompt.Properties>(schema: prompt.Schema): () => Promise<T> {
   return function (): Promise<T> {
     return new Promise((resolve, reject) => {
       loader.stop();

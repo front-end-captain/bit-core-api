@@ -5,8 +5,8 @@
  * @param {boolean} pretty - pretty print or not
  * @returns {Array} args to pass to the json.stringify
  * */
-export function getStringifyArgs(pretty?: boolean): Array<any> {
-  const args = [null, ""];
+export function getStringifyArgs(pretty?: boolean): [null, string] {
+  const args: [null, string] = [null, ""];
   if (pretty) args[1] = "  ";
   return args;
 }

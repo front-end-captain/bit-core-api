@@ -3,13 +3,18 @@ import { ValidationError } from "../error/validation-error";
 
 type Value = "string" | "number" | "array" | "object" | "boolean" | "undefined";
 
-export function validateType(message: string, value: any, fieldName: string, expectedType: Value) {
+export function validateType(
+  message: string,
+  value: unknown,
+  fieldName: string,
+  expectedType: Value,
+) {
   validate(message, value, fieldName, expectedType, false);
 }
 
 export function validateUserInputType(
   message: string,
-  value: any,
+  value: unknown,
   fieldName: string,
   expectedType: Value,
 ) {
@@ -18,7 +23,7 @@ export function validateUserInputType(
 
 function validate(
   message: string,
-  value: any,
+  value: unknown,
   fieldName: string,
   expectedType: Value,
   isUserInput: boolean,

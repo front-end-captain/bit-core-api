@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { expect, describe, it, beforeAll } from "vitest";
 import fs from "fs-extra";
 import * as path from "path";
@@ -25,8 +26,7 @@ describe("React docs Parser", () => {
       beforeAll(async () => {
         const file = path.join(fixtures, "react/react-docs.js");
         const doclets = await parseFile(file);
-        // @ts-ignore
-        doclet = doclets[0];
+        doclet = doclets![0];
       });
       it("should have properties parsed", () => {
         expect(doclet).to.have.property("properties");
@@ -58,8 +58,7 @@ describe("React docs Parser", () => {
       beforeAll(async () => {
         const file = path.join(fixtures, "react/elevation.tsx");
         const doclets = await parseFile(file);
-        // @ts-ignore
-        doclet = doclets[0];
+        doclet = doclets![0];
         expect(doclet).to.be.an("object");
       });
       it("should have properties parsed", () => {
@@ -76,6 +75,28 @@ describe("React docs Parser", () => {
       it("should parse the properties type correctly", () => {
         expect(doclet).to.have.property("properties").that.is.an("array");
         expect(doclet.properties[0].type).to.equal("'none' | 'low' | 'medium' | 'high'");
+      });
+    });
+    describe("Button Component", () => {
+      let doclet: Doclet;
+      beforeAll(async () => {
+        const file = path.join(fixtures, "react/button.tsx");
+        const doclets = await parseFile(file);
+        doclet = doclets![0];
+        expect(doclet).to.be.an("object");
+      });
+      it("should have properties parsed", () => {
+        expect(doclet).to.have.property("properties");
+        expect(doclet.properties).to.be.an("array").with.lengthOf(7);
+      });
+      it("should parse the description correctly", () => {
+        expect(doclet)
+          .to.have.property("description")
+          .that.is.equal("Styled button component for the rich and famous!");
+      });
+      it("should parse the properties type correctly", () => {
+        expect(doclet).to.have.property("properties").that.is.an("array");
+        expect(doclet.properties[2].type).to.equal('"none" | "low" | "medium" | "high"');
       });
     });
   });

@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import execa from "execa";
-// import logger from "../logger/logger";
+import { logger } from "../logger";
 import { PathLinux, PathOsBased } from "../utils/path";
 import { GitNotFound } from "./git/exceptions/git-not-found";
 import { getGitExecutablePath } from "./git/git-executable";
@@ -63,7 +63,15 @@ export async function mergeFiles({
     );
     mergeResult.output = result.stdout;
     return mergeResult;
-  } catch (err: any) {
+  } catch (_err: unknown) {
+    const err = _err as Error & {
+      exitCode: string | number;
+      stdout: string;
+      stderr: string;
+      exitCodeName: string;
+      command: string;
+    };
+
     if (err.exitCode && Number.isInteger(err.exitCode) && err.stdout) {
       // merge has been succeeded, return the diff results.
       mergeResult.conflict = err.stdout;
@@ -79,7 +87,7 @@ export async function mergeFiles({
       return mergeResult;
     }
     if (err.exitCodeName === "ENOENT") {
-      // logger.error(`failed running Git at ${gitExecutablePath}. full command: ${err.command}`);
+      logger.error(`failed running Git at ${gitExecutablePath}. full command: ${err.command}`);
       throw new GitNotFound(gitExecutablePath, err);
     }
     throw new Error(`failed merging "${filePath}" by Git.
@@ -87,6 +95,5 @@ export async function mergeFiles({
 ${chalk.bold("command:")} ${err.command}
 ${chalk.bold("message:")} ${err.message}
 ${chalk.bold("original error:")} ${err.stderr}`);
-    throw err;
   }
 }

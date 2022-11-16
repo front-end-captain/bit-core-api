@@ -26,7 +26,7 @@ export async function parse(data: string, filePath: PathOsBased): Promise<Doclet
         doclets.push(doclet);
       }
     });
-  } catch (e: any) {
+  } catch (e: unknown) {
     // never mind, ignore the doc of this source
     logger.trace(`failed parsing docs using on path ${filePath} with error`, e);
   }

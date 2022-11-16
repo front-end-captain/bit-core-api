@@ -94,11 +94,11 @@ export function getSync(key: string): string | boolean | undefined {
   return gitConfigCache[key];
 }
 
-export function list(): Promise<Record<string, string>> {
+export function list(): Promise<Record<string, string | undefined>> {
   return Config.load().then((config) => config.toPlainObject());
 }
 
-export function listSync(): Record<string, string> {
+export function listSync(): Record<string, string | undefined> {
   const config = Config.loadSync();
   return config.toPlainObject();
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { expect, describe, it } from "vitest";
 
 import { AbortablePromise } from "./abortable-promise";
